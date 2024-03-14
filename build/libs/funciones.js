@@ -275,9 +275,9 @@ let funciones = {
                               <dte:DatosGenerales CodigoMoneda="GTQ" FechaHoraEmision="${fechaemision}" NumeroAcceso="${numeroacceso}" Tipo="FACT" />
                             `
   
-        let emisor = `  <dte:Emisor AfiliacionIVA="GEN" CodigoEstablecimiento="${FEL.CodigoEstablecimiento}" CorreoEmisor="" NITEmisor="${FEL.NITEmisor}" NombreComercial="${FEL.NombreComercial}" NombreEmisor="${FEL.NombreEmisor}">
+        let emisor = `  <dte:Emisor AfiliacionIVA="GEN" CodigoEstablecimiento="${FEL.CodigoEstablecimiento}" CorreoEmisor="" NITEmisor="${FEL.NITEmisor}" NombreComercial="${funciones.limpiar_texto_FEL(FEL.NombreComercial)}" NombreEmisor="${funciones.limpiar_texto_FEL(FEL.NombreEmisor)}">
                           <dte:DireccionEmisor>
-                            <dte:Direccion>${FEL.Direccion}</dte:Direccion>
+                            <dte:Direccion>${funciones.limpiar_texto_FEL(FEL.Direccion)}</dte:Direccion>
                             <dte:CodigoPostal>${FEL.CodigoPostal}</dte:CodigoPostal>
                             <dte:Municipio>${FEL.Municipio}</dte:Municipio>
                             <dte:Departamento>${FEL.Departamento}</dte:Departamento>
@@ -285,12 +285,12 @@ let funciones = {
                           </dte:DireccionEmisor>
                         </dte:Emisor>`;
   
-        let receptor = ` <dte:Receptor CorreoReceptor="" IDReceptor="${nit}" NombreReceptor="${nombre}" ${tipoespecial}>
+        let receptor = ` <dte:Receptor CorreoReceptor="" IDReceptor="${nit}" NombreReceptor="${funciones.limpiar_texto_FEL(nombre)}" ${tipoespecial}>
                           <dte:DireccionReceptor>
-                            <dte:Direccion>${direccion}</dte:Direccion>
+                            <dte:Direccion>${funciones.limpiar_texto_FEL(direccion)}</dte:Direccion>
                             <dte:CodigoPostal>0</dte:CodigoPostal>
-                            <dte:Municipio>${municipio}</dte:Municipio>
-                            <dte:Departamento>${departamento}</dte:Departamento>
+                            <dte:Municipio>${funciones.limpiar_texto_FEL(municipio)}</dte:Municipio>
+                            <dte:Departamento>${funciones.limpiar_texto_FEL(departamento)}</dte:Departamento>
                             <dte:Pais>GT</dte:Pais>
                           </dte:DireccionReceptor>
                         </dte:Receptor>`;
@@ -368,8 +368,8 @@ let funciones = {
     let str = ` 
             <dte:Item BienOServicio="B" NumeroLinea="${numerolinea}">
             <dte:Cantidad>${cantidad}</dte:Cantidad>
-            <dte:UnidadMedida>${codmedida.substring(0,3)}</dte:UnidadMedida>
-            <dte:Descripcion>${descripcion}</dte:Descripcion>
+            <dte:UnidadMedida>${funciones.limpiar_texto_FEL(codmedida.substring(0,3))}</dte:UnidadMedida>
+            <dte:Descripcion>${funciones.limpiar_texto_FEL(descripcion)}</dte:Descripcion>
             <dte:PrecioUnitario>${precioun.toFixed(3)}</dte:PrecioUnitario>
             <dte:Precio>${totalprecio.toFixed(3)}</dte:Precio>
             <dte:Descuento>${Number(descuento)}</dte:Descuento>
@@ -386,6 +386,19 @@ let funciones = {
           `;
     
     return str;
+  },
+  limpiar_texto_FEL:(texto)=>{
+      var ignorarMayMin = true;
+      var reemplazarCon = " pulg";
+      var reemplazarQue = '"';
+      reemplazarQue = reemplazarQue.replace(/[\\^$.|?*+()[{]/g, "\\$&"),
+      reemplazarCon = reemplazarCon.replace(/\$(?=[$&`"'\d])/g, "$$$$"),
+      modif = "g" + (ignorarMayMin ? "i" : ""),
+      regex = new RegExp(reemplazarQue, modif);
+      let resultado = texto.replace(regex,reemplazarCon);
+      resultado = resultado.replace('ñ','n');
+      resultado = resultado.replace('Ñ','N');
+      return resultado;
   },
   imprimirTicket2(coddoc,correlativo,fechaemision,nit,nombre,direccion,fel_uudi,fel_serie,fel_numero,fel_fecha){
 
